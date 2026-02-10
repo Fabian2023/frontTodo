@@ -44,28 +44,44 @@ export const useTodoStore = create((set, get) => ({
   },
 
   // 📌 UPDATE TODO
-  updateTodo: async (id, updates) => {
-    try {
-      const res = await fetch(API_URL, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id, ...updates }),
-      });
+ updateTodo: async (id, updates) => {
+  try {
+    const res = await fetch(API_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, ...updates }),
+    });
 
-      const data = await res.json();
-
-      const updatedList = get().todos.map(todo =>
-        todo.id === id ? data.data : todo
-      );
-
-      set({ todos: updatedList });
-
-    } catch (error) {
-      console.error("Error updating todo", error);
+    // 🚨 Si el backend falla, NO seguimos
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("PUT failed:", res.status, errorText);
+      return;
     }
-  },
+
+    const json = await res.json();
+
+    if (!json?.data?.id) {
+      console.error("Invalid PUT response:", json);
+      return;
+    }
+
+    const updatedTodo = json.data;
+
+    set((state) => ({
+      todos: state.todos.map((todo) =>
+        todo?.id === updatedTodo.id ? updatedTodo : todo
+      ),
+    }));
+
+  } catch (error) {
+    console.error("Error updating todo", error);
+  }
+},
+
+
 
   // 📌 DELETE TODO
   deleteTodo: async (id) => {

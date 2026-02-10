@@ -6,20 +6,19 @@ const Todo = () => {
   const { todos, fetchTodos, addTodo, deleteTodo, updateTodo } = useTodoStore();
   const [input, setInput] = useState("");
   const [checkedTodos, setCheckedTodos] = useState({});
+  const [editingId, setEditingId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState("");
 
-
-const handleCheck = (id) => {
-  setCheckedTodos((prev) => ({
-    ...prev,
-    [id]: !prev[id],
-  }));
-};
-
-
+  const handleCheck = (id) => {
+    setCheckedTodos((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   useEffect(() => {
     fetchTodos();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
@@ -57,26 +56,52 @@ const handleCheck = (id) => {
         <div className="flex flex-col gap-4">
           {todos.map((todo) => (
             <div
-  className={`flex items-center justify-between p-4 rounded-2xl shadow transition-colors
+              key={todo.id}
+              className={`flex items-center justify-between p-4 rounded-2xl shadow transition-colors
     ${checkedTodos[todo.id] ? "bg-green-200" : "bg-white"}
   `}
->
+            >
+              {editingId === todo.id ? (
+                <input
+                  value={editingTitle}
+                  onChange={(e) => setEditingTitle(e.target.value)}
+                  className="flex-1 border border-gray-400 rounded-lg px-2 py-1  outline-none"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      updateTodo(todo.id, {
+                        title: editingTitle,
+                        completed: todo.completed,
+                      });
+                      setEditingId(null);
+                    }
+                  }}
+                />
+              ) : (
+                <p
+                  className={`text-gray-800 ${
+                    checkedTodos[todo.id] ? "line-through opacity-70" : ""
+                  }`}
+                >
+                  {todo.title}
+                </p>
+              )}
 
-              <p className={todo.completed}>{todo.title}</p>
-
-              <div className="flex gap-2">
+              <div className="flex gap-2 ml-4">
                 {/* Toggle completed */}
                 <button
-  onClick={() => handleCheck(todo.id)}
-  className="bg-black text-white p-2 rounded-lg hover:bg-blue-500"
->
-  <Check size={18} />
-</button>
+                  onClick={() => handleCheck(todo.id)}
+                  className="bg-black text-white p-2 rounded-lg hover:bg-blue-500"
+                >
+                  <Check size={18} />
+                </button>
 
-
-                {/* Reset */}
+                {/* update */}
                 <button
-                  onClick={() => updateTodo(todo.id, { completed: false })}
+                  onClick={() => {
+                    setEditingId(todo.id);
+                    setEditingTitle(todo.title);
+                  }}
                   className="bg-black text-white p-2 rounded-lg hover:bg-amber-500"
                 >
                   <RefreshCcw size={18} />
