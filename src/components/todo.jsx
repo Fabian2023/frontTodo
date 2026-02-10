@@ -1,30 +1,37 @@
 import { useEffect, useState } from "react";
-import { Check, Pencil, Trash2, RefreshCcw } from "lucide-react";
+import { Check, Trash2, RefreshCcw } from "lucide-react";
 import { useTodoStore } from "../store/TodoStore";
 
 const Todo = () => {
-  const { todos, fetchTodos, addTodo, deleteTodo, updateTodo } = useTodoStore();
+  const { todos, fetchTodos, addTodo, deleteTodo, updateTodo } =
+    useTodoStore();
+
   const [input, setInput] = useState("");
   const [checkedTodos, setCheckedTodos] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
+
+  useEffect(() => {
+    fetchTodos();
+  }, [fetchTodos]);
+
+  const handleAdd = () => {
+    if (!input.trim()) return;
+
+    addTodo({
+      title: input,
+      completed: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    setInput("");
+  };
 
   const handleCheck = (id) => {
     setCheckedTodos((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-  };
-
-  useEffect(() => {
-    fetchTodos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleAdd = () => {
-    if (!input.trim()) return;
-    addTodo(input);
-    setInput("");
   };
 
   return (
@@ -46,7 +53,7 @@ const Todo = () => {
 
           <button
             onClick={handleAdd}
-            className="bg-[#4080e7] text-white px-6 py-2 rounded-xl hover:opacity-90 cursor-pointer"
+            className="bg-[#4080e7] text-white px-6 py-2 rounded-xl hover:opacity-90"
           >
             Add
           </button>
@@ -57,15 +64,15 @@ const Todo = () => {
           {todos.map((todo) => (
             <div
               key={todo.id}
-              className={`flex items-center justify-between p-4 rounded-2xl shadow transition-colors
-    ${checkedTodos[todo.id] ? "bg-green-200" : "bg-white"}
-  `}
+              className={`flex items-center justify-between p-4 rounded-2xl shadow transition-colors ${
+                checkedTodos[todo.id] ? "bg-green-200" : "bg-white"
+              }`}
             >
               {editingId === todo.id ? (
                 <input
                   value={editingTitle}
                   onChange={(e) => setEditingTitle(e.target.value)}
-                  className="flex-1 border border-gray-400 rounded-lg px-2 py-1  outline-none"
+                  className="flex-1 border border-gray-400 rounded-lg px-2 py-1 outline-none"
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -80,7 +87,9 @@ const Todo = () => {
               ) : (
                 <p
                   className={`text-gray-800 ${
-                    checkedTodos[todo.id] ? "line-through opacity-70" : ""
+                    checkedTodos[todo.id]
+                      ? "line-through opacity-70"
+                      : ""
                   }`}
                 >
                   {todo.title}
@@ -88,7 +97,6 @@ const Todo = () => {
               )}
 
               <div className="flex gap-2 ml-4">
-                {/* Toggle completed */}
                 <button
                   onClick={() => handleCheck(todo.id)}
                   className="bg-black text-white p-2 rounded-lg hover:bg-blue-500"
@@ -96,7 +104,6 @@ const Todo = () => {
                   <Check size={18} />
                 </button>
 
-                {/* update */}
                 <button
                   onClick={() => {
                     setEditingId(todo.id);
@@ -107,7 +114,6 @@ const Todo = () => {
                   <RefreshCcw size={18} />
                 </button>
 
-                {/* Delete */}
                 <button
                   onClick={() => deleteTodo(todo.id)}
                   className="bg-black text-white p-2 rounded-lg hover:bg-red-500"
