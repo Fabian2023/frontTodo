@@ -1,7 +1,9 @@
 import { create } from "zustand";
 
-const API_URL =
-  "https://netg9hbpee.execute-api.us-east-2.amazonaws.com/default/firstFunction";
+const API_URL = import.meta.env.VITE_API_URL;
+
+
+
 
 export const useTodoStore = create((set, get) => ({
   todos: [],
