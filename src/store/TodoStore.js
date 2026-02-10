@@ -15,13 +15,16 @@ export const useTodoStore = create((set, get) => ({
       const res = await fetch(API_URL);
       const data = await res.json();
 
-      // 🛡️ Normalizamos para evitar objetos raros
       const normalizedTodos = (data.data || []).map((todo) => ({
         ...todo,
         title:
           typeof todo.title === "object"
             ? todo.title.title
             : todo.title,
+        createdAt:
+          typeof todo.createdAt === "object"
+            ? todo.createdAt.createdAt
+            : todo.createdAt,
       }));
 
       set({ todos: normalizedTodos });
@@ -38,17 +41,21 @@ export const useTodoStore = create((set, get) => ({
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title }), // ✅ string
+        body: JSON.stringify({ title }),
       });
 
       const json = await res.json();
       const newTodo = json.data;
 
-      // 🛡️ Blindaje
       newTodo.title =
         typeof newTodo.title === "object"
           ? newTodo.title.title
           : newTodo.title;
+
+      newTodo.createdAt =
+        typeof newTodo.createdAt === "object"
+          ? newTodo.createdAt.createdAt
+          : newTodo.createdAt;
 
       set({ todos: [...get().todos, newTodo] });
     } catch (error) {
@@ -70,11 +77,15 @@ export const useTodoStore = create((set, get) => ({
       const json = await res.json();
       const updatedTodo = json.data;
 
-      // 🛡️ Blindaje otra vez
       updatedTodo.title =
         typeof updatedTodo.title === "object"
           ? updatedTodo.title.title
           : updatedTodo.title;
+
+      updatedTodo.createdAt =
+        typeof updatedTodo.createdAt === "object"
+          ? updatedTodo.createdAt.createdAt
+          : updatedTodo.createdAt;
 
       set((state) => ({
         todos: state.todos.map((todo) =>

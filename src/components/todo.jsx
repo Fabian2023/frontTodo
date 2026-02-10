@@ -18,12 +18,7 @@ const Todo = () => {
   const handleAdd = () => {
     if (!input.trim()) return;
 
-    addTodo({
-      title: input,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    });
-
+    addTodo(input); // ✅ SOLO string (correcto para tu backend)
     setInput("");
   };
 
@@ -33,6 +28,22 @@ const Todo = () => {
       [id]: !prev[id],
     }));
   };
+
+  // 📅 Formatear fecha
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+
+    return new Date(dateString).toLocaleDateString("es-CO", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const sortedTodos = [...todos].sort(
+  (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+);
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-linear-to-r from-white to-blue-300 p-6">
@@ -61,7 +72,7 @@ const Todo = () => {
 
         {/* Lista */}
         <div className="flex flex-col gap-4">
-          {todos.map((todo) => (
+          {sortedTodos.map((todo) => (
             <div
               key={todo.id}
               className={`flex items-center justify-between p-4 rounded-2xl shadow transition-colors ${
@@ -85,15 +96,22 @@ const Todo = () => {
                   }}
                 />
               ) : (
-                <p
-                  className={`text-gray-800 ${
-                    checkedTodos[todo.id]
-                      ? "line-through opacity-70"
-                      : ""
-                  }`}
-                >
-                  {todo.title}
-                </p>
+                <div className="flex flex-col">
+                  <p
+                    className={`text-gray-800 ${
+                      checkedTodos[todo.id]
+                        ? "line-through opacity-70"
+                        : ""
+                    }`}
+                  >
+                    {todo.title}
+                  </p>
+
+                  {/* 📅 Fecha */}
+                  <span className="text-xs text-gray-500">
+                    Creado el {formatDate(todo.createdAt)}
+                  </span>
+                </div>
               )}
 
               <div className="flex gap-2 ml-4">
