@@ -49,11 +49,12 @@ const Todo = () => {
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-linear-to-r from-white to-blue-300 p-6">
       <div className="w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-8 text-[#0F172A]">
-          My Todo List
+          MyWorkflow
         </h1>
 
         {/* Input */}
-        <div className="flex gap-4 mb-6 bg-white p-4 rounded-2xl shadow">
+        <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-white p-4 rounded-2xl shadow">
+
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -64,7 +65,7 @@ const Todo = () => {
 
           <button
             onClick={handleAdd}
-            className="bg-[#4080e7] text-white px-6 py-2 rounded-xl hover:opacity-90"
+            className="bg-[#4080e7] text-white px-6 py-2 rounded-full hover:opacity-90 cursor-pointer"
           >
             Add
           </button>
@@ -75,8 +76,8 @@ const Todo = () => {
           {sortedTodos.map((todo) => (
             <div
               key={todo.id}
-              className={`flex items-center justify-between p-4 rounded-2xl shadow transition-colors ${
-                checkedTodos[todo.id] ? "bg-green-200" : "bg-white"
+              className={`flex items-center justify-between p-4 rounded-2xl shadow-xl transition-colors ${
+                checkedTodos[todo.id] ? "bg-green-100" : "bg-white"
               }`}
             >
               {editingId === todo.id ? (
@@ -109,7 +110,7 @@ const Todo = () => {
 
                   {/* 📅 Fecha */}
                   <span className="text-xs text-gray-500">
-                    Creado el {formatDate(todo.createdAt)}
+                     {formatDate(todo.createdAt)}
                   </span>
                 </div>
               )}
@@ -117,7 +118,7 @@ const Todo = () => {
               <div className="flex gap-2 ml-4">
                 <button
                   onClick={() => handleCheck(todo.id)}
-                  className="bg-black text-white p-2 rounded-lg hover:bg-blue-500"
+                  className="bg-black text-white p-2 rounded-lg hover:bg-blue-500 cursor-pointer"
                 >
                   <Check size={18} />
                 </button>
@@ -127,14 +128,14 @@ const Todo = () => {
                     setEditingId(todo.id);
                     setEditingTitle(todo.title);
                   }}
-                  className="bg-black text-white p-2 rounded-lg hover:bg-amber-500"
+                  className="bg-black text-white p-2 rounded-lg hover:bg-amber-500 cursor-pointer"
                 >
                   <RefreshCcw size={18} />
                 </button>
 
                 <button
                   onClick={() => deleteTodo(todo.id)}
-                  className="bg-black text-white p-2 rounded-lg hover:bg-red-500"
+                  className="bg-black text-white p-2 rounded-lg hover:bg-red-500 cursor-pointer"
                 >
                   <Trash2 size={18} />
                 </button>
